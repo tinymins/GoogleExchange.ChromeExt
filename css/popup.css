@@ -1,0 +1,11 @@
+.fl_right{ float:right; }
+.fl_left{ float:left; }
+.fl_cls{ clear:both; }
+.button {cursor:pointer;}
+input,select{font-family: inherit;height: 22px;}
+
+#config_button { width:20px;height:20px;border-radius: 5px;background:url(image/icons2.png) repeat -176px -51px; }
+#config_button:hover{ background:url(image/icons2.png) repeat -176px -213px; }
+#config_container {overflow:hidden;}
+#config_panel {margin: 10 10;font-size: 14px;border-top:1px solid #999;}
+.config_layer {margin:5px 0 0 0}

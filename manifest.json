@@ -1,0 +1,23 @@
+{
+	"browser_action": {
+		"default_icon": "icons/icon_128.png",
+		"default_popup": "popup.html",
+		"default_title": "谷歌汇率转换小工具"
+	},
+	"description": "本人系三无程序员，程序任何故障以及使用后产生的蛋疼恶心呕吐怀孕等任何个人问题以及法律问题与本人无关。安装此插件表示同意以上内容。---翟一鸣制作",
+	"icons": {
+		"16": "icons/icon_16.png",
+		"19": "icons/icon_19.png",
+		"48": "icons/icon_48.png",
+		"32": "icons/icon_32.png",
+		"64": "icons/icon_64.png",
+		"128": "icons/icon_128.png",
+		"256": "icons/icon_256.png"
+	},
+	"manifest_version": 2,
+	"name": "谷歌汇率转换小工具",
+	"permissions": [ "http://www.google.com/", "https://www.google.com/", "http://www.baidu.com/" ],
+	"short_name": "谷歌汇率通",
+	"update_url": "https://clients2.google.com/service/update2/crx",
+	"version": "0.3.7"
+}
