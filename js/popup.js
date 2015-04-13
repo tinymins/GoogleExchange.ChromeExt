@@ -2,10 +2,11 @@ $(window).ready(function(){
 	$("#config_button").unbind().click(function(){
 		if($("#config_button").data('switch_flag')=='open') {
 			$("#config_container").animate({height:"0px"},500);
-			$("body").animate({height:"0px"},500);
+			$("body").animate({height:"134px"},500);
 			$("#config_button").data('switch_flag','close');
 		}else{
 			$("#config_container").animate({height:"100px"},500);
+			$("body").animate({height:"234px"},500);
 			$("#config_button").data('switch_flag','open');
 		}
 	});
