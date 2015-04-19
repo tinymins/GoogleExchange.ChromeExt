@@ -216,6 +216,7 @@ var TMSGCCW;
 		 **/
 		convert: function(amount){
 			try{
+				amount = amount.toString().replace(/[ ,]+/g, '')
 				if(this.exchangeRate==-1) return "汇率查询失败";
 				var quickExp = /[^\d\.]/;
 				if(quickExp.test(amount)) return "输入有误";
