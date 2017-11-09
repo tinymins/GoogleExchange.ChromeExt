@@ -118,7 +118,7 @@ var TMSGCCW;
 				if(typeof(currencyAdded[p])=="undefined") sHtml+='<option value="'+p+'" >'+this.currencyList[p]+'</option>';
 			};
 			fromCombo.innerHTML=sHtml;
-			
+
 			sHtml = ''; currencyAdded = {};
 			for(var i = this.toCurrencyList.length-1; i >= 0; i--){
 				sHtml+='<option value="'+this.toCurrencyList[i]+'" >'+this.currencyList[this.toCurrencyList[i]]+'</option>';currencyAdded[this.toCurrencyList[i]]=1;
@@ -127,7 +127,7 @@ var TMSGCCW;
 				if(typeof(currencyAdded[p])=="undefined") sHtml+='<option value="'+p+'" >'+this.currencyList[p]+'</option>';
 			};
 			toCombo.innerHTML=sHtml;
-			
+
 			fromCombo.value = TMSGCCW.fromCurrency||'USD';
 			toCombo.value = TMSGCCW.toCurrency||'CNY';
 		},
@@ -192,7 +192,8 @@ var TMSGCCW;
 			console.log("√ ["+(new Date).toLocaleString()+"] 开始查询汇率：https://www.google.com/finance/converter?a=1&from="+fromCurrency+"&to="+toCurrency);
 			var date = new Date;
 			var randSeed = date.getUTCFullYear().toString()+date.getUTCMonth()+date.getDate()+date.getHours();// parseInt(9999999*Math.random()) 防止读缓存
-			$.ajax({type: 'GET', url: "https://www.google.com/finance/converter", data: {hl:this.language,a:"1",from:fromCurrency,to:toCurrency,randSeed:randSeed}, success: function(result){
+			$.ajax({
+				type: 'GET', url: "https://finance.google.com/finance/converter", data: {hl:this.language,a:"1",from:fromCurrency,to:toCurrency,randSeed:randSeed}, success: function(result){
 				console.log("["+(new Date).toLocaleString()+"] 汇率查询完成。")
 				callback && callback(parseFloat($(result).find('#currency_converter_result').find('.bld').text().replace(/[^\d\.]+/ig,'')));
 			}, dataType: "html", error: function(xmlHttpRequest, errMsg) {
@@ -238,7 +239,7 @@ var TMSGCCW;
 						TMSGCCW.setFromCurrency(base_list.value);
 						TMSGCCW.setToCurrency(target_list.value);
 						TMSGCCW.saveSettings();
-						
+
 						TMSGCCW.showExchangeRateTip("1 " + TMSGCCW.fromCurrency + " = " + exchangeRate + ' ' + TMSGCCW.toCurrency);
 						tipStart.innerHTML = "« 将"+TMSGCCW.fromCurrency+"换算为"+TMSGCCW.toCurrency;
 						//TMSGCCW.startConvert();
@@ -303,8 +304,8 @@ adDiv.onclick = function(){
 	this.innerHTML = adva[advi%adva.length];
 	if(advi>9) {
 		alert('("= =") 点这么多下不如自己去看看。。。');
-		window.open("http://www.zhaiyiming.com/",'newwindow','height=768,width=1366,top=40,left=20,toolbar=no,menubar=no,scrollbars=yes, resizable=yes,location=yes, status=yes'); 
-		window.open("http://翟一鸣.中国/","","width=800,height=600"); 
+		window.open("http://www.zhaiyiming.com/",'newwindow','height=768,width=1366,top=40,left=20,toolbar=no,menubar=no,scrollbars=yes, resizable=yes,location=yes, status=yes');
+		window.open("http://翟一鸣.中国/","","width=800,height=600");
 	}
-	
+
 }
