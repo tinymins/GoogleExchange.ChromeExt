@@ -298,14 +298,8 @@ document.body.onkeydown=function(e) {
 	TMSGCCW.startConvert();
 }
 var advi = 0;
-var adva = ['© 翟小明tinymins<br>数据取自即时 Google Finance','Welcome to my web site:<br>ZhaiYiMing.CoM | 翟一鸣.中国','　　　　微博:weibo.com/zymah<br>QQ:59991021 百度:zymah'];
+var adva = ['© 一名宅<br>数据取自即时 Google Finance'];
 adDiv.onclick = function(){
 	advi++;
 	this.innerHTML = adva[advi%adva.length];
-	if(advi>9) {
-		alert('("= =") 点这么多下不如自己去看看。。。');
-		window.open("http://www.zhaiyiming.com/",'newwindow','height=768,width=1366,top=40,left=20,toolbar=no,menubar=no,scrollbars=yes, resizable=yes,location=yes, status=yes');
-		window.open("http://翟一鸣.中国/","","width=800,height=600");
-	}
-
 }
