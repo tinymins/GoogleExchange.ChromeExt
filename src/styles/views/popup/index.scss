@@ -6,6 +6,7 @@
  */
 .popup {
   width: 530px;
+  padding: 0 20px;
 
   &-title {
     padding: 6px 0 5px;
@@ -46,6 +47,10 @@
         flex-grow: 0;
         flex-shrink: 0;
         margin-right: 2px;
+      }
+
+      &-currency {
+        width: 220px;
       }
     }
   }

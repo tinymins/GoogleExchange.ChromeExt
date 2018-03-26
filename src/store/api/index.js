@@ -14,7 +14,7 @@ export const API_HOST = isDevelop() ? 'https://dev.haimanchajian.com/api' : '/ap
 
 let Indicator = () => { console.warn('Indicator has not been loaded yet!'); };
 let MessageBox = () => { console.warn('MessageBox has not been loaded yet!'); };
-const getLoadingText = config => `Connecting ${config.url.replace(/.*:\/\//, '').replace(/\/.*/, '')}${config.loadingText ? ` | ${config.loadingText}` : ''}`;
+const getLoadingText = config => (config.loadingText ? `Connecting ${config.url.replace(/.*:\/\//, '').replace(/\/.*/, '')}${config.loadingText ? ` | ${config.loadingText}` : ''}` : '');
 
 import('element-ui/lib/loading').then(({ default: Loading }) => {
   let stack = [];

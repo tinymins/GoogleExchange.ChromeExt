@@ -10,7 +10,7 @@
       <div class="conv-body">
         <div class="conv-body-line">
           <el-input class="conv-body-line-amount" v-model="fromAmount" size="small" value="100"></el-input>
-          <el-select v-model="fromCurrency" size="small" filterable placeholder="请选择" @visible-change="onSelectVisibleChange">
+          <el-select class="conv-body-line-currency" v-model="fromCurrency" size="small" filterable placeholder="请选择" @visible-change="onSelectVisibleChange">
             <el-option
               v-for="item in list"
               :key="item.value"
@@ -20,8 +20,8 @@
           </el-select>
         </div>
         <div class="conv-body-line">
-          <el-input class="conv-body-line-amount" v-model="toAmount" size="small" value="100" readonly></el-input>
-          <el-select v-model="toCurrency" size="small" filterable placeholder="请选择" @visible-change="onSelectVisibleChange">
+          <el-input class="conv-body-line-amount" v-model="toAmount" size="small" readonly></el-input>
+          <el-select class="conv-body-line-currency" v-model="toCurrency" size="small" filterable placeholder="请选择" @visible-change="onSelectVisibleChange">
             <el-option
               v-for="item in list"
               :key="item.value"
@@ -79,14 +79,16 @@ export default {
       return this.selectVisible ? '380px' : '128px';
     },
     toAmount() {
-      return this.fromAmount * this.rate;
+      return Math.ceil(this.fromAmount * this.rate * 10000) / 10000;
     },
-    ...mapState('currency', ['list', 'rate']),
+    chartUrl() {
+      return this.chart.replace('chst=vkc', 'chst=cob').replace('chs=270x94', '').replace('chsc=2', '');
+    },
+    ...mapState('currency', ['list', 'rate', 'chart']),
   },
   data() {
     return {
-      title: '获取数据出现错误 请检查网络连接 [难道...Google又被墙掉了?]',
-      chartUrl: 'http://www.google.com/finance/chart?q=CURRENCY:USDCNY&tkr=1&p=5Y&chst=cob',
+      title: '汇率转换',
       fromAmount: getLocal('fromAmount') || '100',
       fromCurrency: getLocal('fromCurrency') || '',
       toCurrency: getLocal('toCurrency') || '',

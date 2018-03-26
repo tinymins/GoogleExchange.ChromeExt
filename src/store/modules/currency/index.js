@@ -42,7 +42,7 @@ export default {
       commit(CURRENCY.RATE_REQUEST, params);
       return new Promise((resolve, reject) => {
         api.getRate(
-          'Fetching currency from google...',
+          '',
           state.kei,
           state.fromCurrency,
           state.toCurrency,
