@@ -3,6 +3,7 @@
     <div class="popup-title">
       <h3><b>{{ title }}</b></h3>
     </div>
+    <div class="popup-author">&copy; 一名宅</div>
     <div class="popup-body conv">
       <div class="conv-image">
         <img class="conv-image__img" :src="chartUrl">
