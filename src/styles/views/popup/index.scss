@@ -1,0 +1,52 @@
+/**
+ * @Author: Zhai Yiming (root@derzh.com)
+ * @Date:   2017-08-23 12:57:02
+ * @Last Modified by:   Zhai Yiming
+ * @Last Modified time: 2017-09-02 17:17:29
+ */
+.popup {
+  width: 530px;
+
+  &-title {
+    padding: 6px 0 5px;
+    & h3 { display: inline; }
+  }
+
+  &-body {
+    height: 104px;
+    font-size: small;
+    float: left;
+  }
+}
+
+.conv {
+  display: flex;
+  flex-direction: row;
+
+  &-image {
+    width: 205px;
+    height: 102px;
+    flex-grow: 0;
+    flex-shrink: 0;
+  }
+
+  &-body {
+    margin: 5px 0 0 15px;
+
+    &-line {
+      display: flex;
+      flex-direction: row;
+
+      &:not(:first-child) {
+        margin-top: 10px;
+      }
+
+      &-amount {
+        width: 92px;
+        flex-grow: 0;
+        flex-shrink: 0;
+        margin-right: 2px;
+      }
+    }
+  }
+}
