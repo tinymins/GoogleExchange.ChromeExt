@@ -7,8 +7,8 @@
 
 import { http } from '@/store/api';
 
-export const getList = loadingText => http.get('https://www.google.com.hk/search?q=usd+to+cny&gws_rd=cr', { loadingText });
-export const getRate = (loadingText, kei, fromCurrency, toCurrency) => http.get('https://www.google.com.hk/async/currency_update', {
+export const getList = loadingText => http.get('https://www.google.com/search?q=usd+to+cny&gws_rd=cr', { loadingText });
+export const getRate = (loadingText, kei, fromCurrency, toCurrency) => http.get('https://www.google.com/async/currency_update', {
   loadingText,
   params: {
     ei: kei,
