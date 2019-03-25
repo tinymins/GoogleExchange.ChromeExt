@@ -6,7 +6,7 @@
     <div class="popup-author">&copy; 一名宅</div>
     <div class="popup-body conv">
       <div class="conv-image">
-        <img class="conv-image__img" :src="chartUrl">
+        <img v-if="chart" class="conv-image__img" :src="chartUrl">
       </div>
       <div class="conv-body">
         <div class="conv-body-line">
@@ -72,7 +72,7 @@ export default {
   },
   computed: {
     height() {
-      return this.selectVisible ? '480px' : '140px';
+      return this.selectVisible ? '480px' : '150px';
     },
     toAmount() {
       return Math.ceil(this.fromAmount * this.rate * 10000) / 10000;
