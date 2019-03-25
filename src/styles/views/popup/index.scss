@@ -23,7 +23,6 @@
   }
 
   &-body {
-    height: 208px;
     font-size: small;
     float: left;
   }
@@ -67,6 +66,17 @@
       &-currency {
         width: 440px;
       }
+    }
+  }
+
+  &-exchange {
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+
+    &__btn {
+      padding: 10px;
     }
   }
 }

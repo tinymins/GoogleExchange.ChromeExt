@@ -46,6 +46,9 @@
           </el-select>
         </div>
       </div>
+      <div class="conv-exchange">
+        <el-button class="conv-exchange__btn" icon="el-icon-sort" circle @click="exchange"></el-button>
+      </div>
     </div>
   </div>
 </template>
@@ -53,9 +56,10 @@
 import { CURRENCY } from '@/store/types';
 import { getLocal } from '@/utils/storage';
 import { mapActions, mapState } from 'vuex';
-import { Input, Select, Option } from 'element-ui';
+import { Input, Select, Option, Button } from 'element-ui';
 
 export default {
+  uses: [Button],
   components: {
     [Input.name]: Input,
     [Select.name]: Select,
@@ -124,6 +128,11 @@ export default {
           this.timerSelectVisible = null;
         }, 200);
       }
+    },
+    exchange() {
+      const toCurrency = this.toCurrency;
+      this.toCurrency = this.fromCurrency;
+      this.fromCurrency = toCurrency;
     },
   },
 };
