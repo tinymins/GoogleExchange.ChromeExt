@@ -61,24 +61,18 @@ export default {
     [Select.name]: Select,
     [Option.name]: Option,
   },
-  asyncData({ store }) {
-    const ps = [];
-    ps.push(store.dispatch(`currency/${CURRENCY.LIST_REQUEST}`));
-    ps.push(store.dispatch(`currency/${CURRENCY.RATE_REQUEST}`));
-    return Promise.all(ps);
-  },
   data() {
     return {
       title: '汇率转换',
       fromAmount: getLocal('fromAmount') || '100',
-      fromCurrency: getLocal('fromCurrency') || '',
-      toCurrency: getLocal('toCurrency') || '',
+      fromCurrency: this.$store.state.currency.rate.fromCurrency,
+      toCurrency: this.$store.state.currency.rate.toCurrency,
       selectVisible: false,
     };
   },
   computed: {
     height() {
-      return this.selectVisible ? '380px' : '128px';
+      return this.selectVisible ? '480px' : '140px';
     },
     toAmount() {
       return Math.ceil(this.fromAmount * this.rate * 10000) / 10000;
@@ -86,7 +80,8 @@ export default {
     chartUrl() {
       return this.chart.replace('chst=vkc', 'chst=cob').replace('chs=270x94', '').replace('chsc=2', '');
     },
-    ...mapState('currency', ['list', 'rate', 'chart']),
+    ...mapState('currency/list', ['list']),
+    ...mapState('currency/rate', ['rate', 'chart']),
   },
   watch: {
     fromAmount() {
@@ -99,7 +94,24 @@ export default {
       this.getRate({ fromCurrency: this.fromCurrency, toCurrency: this.toCurrency });
     },
   },
+  async mounted() {
+    const id = Symbol('Fetching currency');
+    this.$showLoading({ id, text: 'Fetching currency from google...' });
+    try {
+      await this.getList();
+      await this.getRate({ fromCurrency: this.fromCurrency, toCurrency: this.toCurrency });
+      this.$hideLoading({ id });
+    } catch (e) {
+      this.$showLoading({ id, text: 'Fetch currency data failed!' });
+    }
+  },
   methods: {
+    ...mapActions('currency/list', {
+      getList: CURRENCY.LIST_REQUEST,
+    }),
+    ...mapActions('currency/rate', {
+      getRate: CURRENCY.RATE_REQUEST,
+    }),
     onSelectVisibleChange(visible) {
       if (visible) {
         if (this.timerSelectVisible) {
@@ -113,10 +125,6 @@ export default {
         }, 200);
       }
     },
-    ...mapActions('currency', {
-      getList: CURRENCY.LIST_REQUEST,
-      getRate: CURRENCY.RATE_REQUEST,
-    }),
   },
 };
 </script>

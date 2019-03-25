@@ -7,23 +7,22 @@
  */
 
 .popup {
-  width: 530px;
-  padding: 0 20px;
+  padding: 0 40px;
 
   &-title {
-    padding: 6px 0 5px;
+    padding: 12px 0 10px;
     & h3 { display: inline; }
   }
 
   &-author {
     position: fixed;
-    top: 10px;
-    right: 20px;
+    top: 20px;
+    right: 40px;
     color: gray;
   }
 
   &-body {
-    height: 104px;
+    height: 208px;
     font-size: small;
     float: left;
   }
@@ -34,32 +33,32 @@
   flex-direction: row;
 
   &-image {
-    width: 205px;
-    height: 102px;
+    width: 270px;
+    height: 135px;
     flex-grow: 0;
     flex-shrink: 0;
   }
 
   &-body {
-    margin: 5px 0 0 15px;
+    margin: 10px 0 0 30px;
 
     &-line {
       display: flex;
       flex-direction: row;
 
       &:not(:first-child) {
-        margin-top: 10px;
+        margin-top: 20px;
       }
 
       &-amount {
-        width: 92px;
+        width: 184px;
         flex-grow: 0;
         flex-shrink: 0;
-        margin-right: 2px;
+        margin-right: 4px;
       }
 
       &-currency {
-        width: 220px;
+        width: 440px;
       }
     }
   }

@@ -1,112 +1,22 @@
-/*
-* @Author: William Chan
-* @Date:   2017-05-03 15:53:04
-* @Last Modified by:   Administrator
-* @Last Modified time: 2017-05-04 12:06:30
-*/
+/**
+ * This file is part of vue-boilerplate.
+ * @link     : https://zhaiyiming.com/
+ * @author   : Emil Zhai (root@derzh.com)
+ * @modifier : Emil Zhai (root@derzh.com)
+ * @copyright: Copyright (c) 2018 TINYMINS.
+ */
 /* eslint no-param-reassign: ["error", { "props": false }] */
-
-import { setLocal, getLocal } from '@/utils/storage';
-import * as api from '@/store/api/currency';
-import { CURRENCY } from '@/store/types';
+import rateModule from './rate';
+import listModule from './list';
 
 export default {
   namespaced: true,
-  state: {
-    lock: false,
-    list: [],
-    rate: 0,
-    rateLock: false,
-    chart: '',
-    kei: '',
-    fromCurrency: getLocal('fromCurrency'),
-    toCurrency: getLocal('toCurrency'),
+  modules: {
+    rate: rateModule,
+    list: listModule,
   },
+  state: {},
   getters: {},
-  actions: {
-    [CURRENCY.LIST_REQUEST]({ commit }, params) {
-      commit(CURRENCY.LIST_REQUEST, params);
-      return new Promise((resolve, reject) => {
-        api.getList(
-          'Fetching currency from google...',
-        ).then((res) => {
-          commit(CURRENCY.LIST_SUCCESS, res);
-          resolve();
-        }).catch(() => {
-          commit(CURRENCY.LIST_FAILURE);
-          reject();
-        });
-      });
-    },
-    [CURRENCY.RATE_REQUEST]({ commit, state }, params) {
-      commit(CURRENCY.RATE_REQUEST, params);
-      return new Promise((resolve, reject) => {
-        api.getRate(
-          '',
-          state.kei,
-          state.fromCurrency,
-          state.toCurrency,
-        ).then((res) => {
-          commit(CURRENCY.RATE_SUCCESS, res);
-          resolve();
-        }).catch(() => {
-          commit(CURRENCY.RATE_FAILURE);
-          reject();
-        });
-      });
-    },
-  },
-  mutations: {
-    [CURRENCY.LIST_REQUEST](state) {
-      state.lock = true;
-    },
-    [CURRENCY.LIST_SUCCESS](state, html) {
-      const list = [];
-      const found = html.match(/<select id="knowledge-currency.*?<\/select/u);
-      if (found) {
-        const part = found[0];
-        const re = /<option[^>]*value\s*=\s*"([^"]*)"[^>]*>([^<]*)<\/option>/giu;
-        let r = re.exec(part);
-        while (r) {
-          list.push({
-            value: r[1],
-            label: r[2],
-          });
-          r = re.exec(part);
-        }
-      }
-      const kei = html.match(/kEI:'(\w+)'/u);
-      if (kei) {
-        state.kei = kei[1];
-      }
-      state.list = list;
-      state.lock = false;
-    },
-    [CURRENCY.LIST_FAILURE](state) {
-      state.lock = false;
-    },
-    [CURRENCY.RATE_REQUEST](state, params) {
-      if (params) {
-        if (params.fromCurrency && params.fromCurrency !== state.fromCurrency) {
-          state.fromCurrency = params.fromCurrency;
-          setLocal('fromCurrency', state.fromCurrency);
-        }
-        if (params.toCurrency && params.toCurrency !== state.toCurrency) {
-          state.toCurrency = params.toCurrency;
-          setLocal('toCurrency', state.toCurrency);
-        }
-      }
-      state.rateLock = true;
-    },
-    [CURRENCY.RATE_SUCCESS](state, html) {
-      const json = html.replace(/^\)\]\}'/u, '');
-      const data = JSON.parse(json);
-      state.rate = data.CurrencyUpdate[0][0];
-      state.chart = data.CurrencyUpdate[2];
-      state.rateLock = false;
-    },
-    [CURRENCY.RATE_FAILURE](state) {
-      state.rateLock = false;
-    },
-  },
+  actions: {},
+  mutations: {},
 };
