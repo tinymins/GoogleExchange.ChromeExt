@@ -24,13 +24,13 @@ export default {
   },
   getters: {},
   actions: {
-    [CURRENCY.LIST_REQUEST]({ commit, state }, params) {
+    [CURRENCY.LIST_REQUEST]({ commit }, params) {
       commit(CURRENCY.LIST_REQUEST, params);
       return new Promise((resolve, reject) => {
         api.getList(
           'Fetching currency from google...',
         ).then((res) => {
-          commit(CURRENCY.LIST_SUCCESS, res.data);
+          commit(CURRENCY.LIST_SUCCESS, res);
           resolve();
         }).catch(() => {
           commit(CURRENCY.LIST_FAILURE);
@@ -47,7 +47,7 @@ export default {
           state.fromCurrency,
           state.toCurrency,
         ).then((res) => {
-          commit(CURRENCY.RATE_SUCCESS, res.data);
+          commit(CURRENCY.RATE_SUCCESS, res);
           resolve();
         }).catch(() => {
           commit(CURRENCY.RATE_FAILURE);
@@ -62,12 +62,11 @@ export default {
     },
     [CURRENCY.LIST_SUCCESS](state, html) {
       const list = [];
-      const found = html.match(/<select id="knowledge-currency.*?<\/select/);
+      const found = html.match(/<select id="knowledge-currency.*?<\/select/u);
       if (found) {
         const part = found[0];
-        const re = /<option[^>]*value\s*=\s*"([^"]*)"[^>]*>([^<]*)<\/option>/gi;
+        const re = /<option[^>]*value\s*=\s*"([^"]*)"[^>]*>([^<]*)<\/option>/giu;
         let r = re.exec(part);
-        const matched = !!r;
         while (r) {
           list.push({
             value: r[1],
@@ -76,7 +75,7 @@ export default {
           r = re.exec(part);
         }
       }
-      const kei = html.match(/kEI:'(\w+)'/);
+      const kei = html.match(/kEI:'(\w+)'/u);
       if (kei) {
         state.kei = kei[1];
       }
@@ -100,7 +99,7 @@ export default {
       state.rateLock = true;
     },
     [CURRENCY.RATE_SUCCESS](state, html) {
-      const json = html.replace(/^\)\]}'/, '');
+      const json = html.replace(/^\)\]\}'/u, '');
       const data = JSON.parse(json);
       state.rate = data.CurrencyUpdate[0][0];
       state.chart = data.CurrencyUpdate[2];

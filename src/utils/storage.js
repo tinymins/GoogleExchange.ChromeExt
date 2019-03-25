@@ -1,8 +1,9 @@
 /**
- * @Author: Zhai Yiming (root@derzh.com)
- * @Date:   2017-12-13 2:58:06
- * @Last Modified by:   Zhai Yiming (root@derzh.com)
- * @Last Modified time: 2017-12-28 09:59:01
+ * This file is part of vue-boilerplate.
+ * @link     : https://zhaiyiming.com/
+ * @author   : Emil Zhai (root@derzh.com)
+ * @modifier : Emil Zhai (root@derzh.com)
+ * @copyright: Copyright (c) 2018 TINYMINS.
  */
 import * as cookie from './cookie';
 
@@ -16,7 +17,8 @@ export const getLocal = (k) => {
   try {
     return JSON.parse(raw);
   } catch (e) {
-    return undefined;
+    return void 0;
   }
 };
 export const removeLocal = k => (window.localStorage ? window.localStorage.removeItem(k) : cookie.remove(k));
+export const clearLocal = () => (window.localStorage ? window.localStorage.clear() : cookie.clear());

@@ -1,12 +1,27 @@
 /**
- * @Author: Zhai Yiming (root@derzh.com)
- * @Date:   2017-08-22 19:32:30
- * @Last Modified by:   Zhai Yiming
- * @Last Modified time: 2017-08-22 19:33:07
+ * This file is part of vue-boilerplate.
+ * @link     : https://zhaiyiming.com/
+ * @author   : Emil Zhai (root@derzh.com)
+ * @modifier : Emil Zhai (root@derzh.com)
+ * @copyright: Copyright (c) 2018 TINYMINS.
  */
 
-export const BASE_API_HOST = '/api';
-export const WECHAT_LOGIN_URL = '/api/authorize?mode=wx';
-
-// import components we actually need, making the project smaller than otherwise.
-export const isOnDemandComponents = true;
+export const SLOW_API_TIME = 300;
+export const MAX_API_RETRY_COUNT = 3;
+export const CAMELIZE_API_RESPONSE = true;
+export const AUTH_STATE = {
+  LOGGED_IN: 0,
+  GUEST: 401,
+  UNREGISTERED: 448,
+};
+export const AUTH_STATE_LIST = Object.values(AUTH_STATE);
+export const AUTH_REDIRECT = {
+  [AUTH_STATE.LOGGED_IN]: 'index',
+  [AUTH_STATE.GUEST]: 'user_login',
+  [AUTH_STATE.UNREGISTERED]: 'user_register',
+};
+export const BASE_HOST = window.location.origin;
+export const ICON_URL = '';
+export const BASE_API_URL = '/api';
+export const WECHAT_AUTH_URL = `${BASE_API_URL}/authorize?mode={{reason}}&service={{service}}&redirect_uri={{redirect}}`;
+export const MULTI_REQUEST_URL = null;

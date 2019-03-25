@@ -1,10 +1,13 @@
 <template>
-  <div class="progress" :style="{
-      'width': percent+'%',
+  <div
+    class="progress"
+    :style="{
+      'width': percent + '%',
       'height': height,
-      'background-color': canSuccess? color : failedColor,
-      'opacity': show ? 1 : 0
-    }">
+      'background-color': canSuccess ? color : failedColor,
+      'opacity': show ? 1 : 0,
+    }"
+  >
   </div>
 </template>
 
@@ -25,13 +28,13 @@ export default {
     start() {
       this.show = true;
       this.canSuccess = true;
-      if (this._timer) {
-        clearInterval(this._timer);
+      if (this.timer) {
+        clearInterval(this.timer);
         this.percent = 0;
       }
-      this._cut = 10000 / Math.floor(this.duration);
-      this._timer = setInterval(() => {
-        this.increase(this._cut * Math.random());
+      this.cut = 10000 / Math.floor(this.duration);
+      this.timer = setInterval(() => {
+        this.increase(this.cut * Math.random());
         if (this.percent > 95) {
           this.finish();
         }
@@ -60,13 +63,18 @@ export default {
       this.hide();
       return this;
     },
+    abort() {
+      this.percent = 0;
+      this.hide();
+      return this;
+    },
     pause() {
-      clearInterval(this._timer);
+      clearInterval(this.timer);
       return this;
     },
     hide() {
-      clearInterval(this._timer);
-      this._timer = null;
+      clearInterval(this.timer);
+      this.timer = null;
       setTimeout(() => {
         this.show = false;
         this.$nextTick(() => {
@@ -93,7 +101,7 @@ export default {
   right: 0;
   height: 2px;
   width: 0%;
-  transition: width 0.2s, opacity 0.4s;
+  transition: width .2s, opacity .4s;
   opacity: 1;
   z-index: 999999;
 }

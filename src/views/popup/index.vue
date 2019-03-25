@@ -11,24 +11,38 @@
       <div class="conv-body">
         <div class="conv-body-line">
           <el-input class="conv-body-line-amount" v-model="fromAmount" size="small" value="100"></el-input>
-          <el-select class="conv-body-line-currency" v-model="fromCurrency" size="small" filterable placeholder="请选择" @visible-change="onSelectVisibleChange">
+          <el-select
+            v-model="fromCurrency"
+            class="conv-body-line-currency"
+            size="small"
+            filterable
+            placeholder="请选择"
+            @visible-change="onSelectVisibleChange"
+          >
             <el-option
               v-for="item in list"
               :key="item.value"
               :label="item.label"
-              :value="item.value">
-            </el-option>
+              :value="item.value"
+            ></el-option>
           </el-select>
         </div>
         <div class="conv-body-line">
           <el-input class="conv-body-line-amount" v-model="toAmount" size="small" readonly></el-input>
-          <el-select class="conv-body-line-currency" v-model="toCurrency" size="small" filterable placeholder="请选择" @visible-change="onSelectVisibleChange">
+          <el-select
+            v-model="toCurrency"
+            class="conv-body-line-currency"
+            size="small"
+            filterable
+            placeholder="请选择"
+            @visible-change="onSelectVisibleChange"
+          >
             <el-option
               v-for="item in list"
               :key="item.value"
               :label="item.label"
-              :value="item.value">
-            </el-option>
+              :value="item.value"
+            ></el-option>
           </el-select>
         </div>
       </div>
@@ -36,8 +50,8 @@
   </div>
 </template>
 <script>
-import { popupWindow } from '@/utils/util';
-import { setLocal, getLocal } from '@/utils/storage';
+import { CURRENCY } from '@/store/types';
+import { getLocal } from '@/utils/storage';
 import { mapActions, mapState } from 'vuex';
 import { Input, Select, Option } from 'element-ui';
 
@@ -49,14 +63,43 @@ export default {
   },
   asyncData({ store }) {
     const ps = [];
-    ps.push(store.dispatch('currency/CURRENCY_LIST_REQUEST'));
-    ps.push(store.dispatch('currency/CURRENCY_RATE_REQUEST'));
+    ps.push(store.dispatch(`currency/${CURRENCY.LIST_REQUEST}`));
+    ps.push(store.dispatch(`currency/${CURRENCY.RATE_REQUEST}`));
     return Promise.all(ps);
   },
-  methods: {
-    popupUser() {
-      popupWindow('index.html#/user', true);
+  data() {
+    return {
+      title: '汇率转换',
+      fromAmount: getLocal('fromAmount') || '100',
+      fromCurrency: getLocal('fromCurrency') || '',
+      toCurrency: getLocal('toCurrency') || '',
+      selectVisible: false,
+    };
+  },
+  computed: {
+    height() {
+      return this.selectVisible ? '380px' : '128px';
     },
+    toAmount() {
+      return Math.ceil(this.fromAmount * this.rate * 10000) / 10000;
+    },
+    chartUrl() {
+      return this.chart.replace('chst=vkc', 'chst=cob').replace('chs=270x94', '').replace('chsc=2', '');
+    },
+    ...mapState('currency', ['list', 'rate', 'chart']),
+  },
+  watch: {
+    fromAmount() {
+      this.getRate({ fromCurrency: this.fromCurrency, toCurrency: this.toCurrency });
+    },
+    fromCurrency() {
+      this.getRate({ fromCurrency: this.fromCurrency, toCurrency: this.toCurrency });
+    },
+    toCurrency() {
+      this.getRate({ fromCurrency: this.fromCurrency, toCurrency: this.toCurrency });
+    },
+  },
+  methods: {
     onSelectVisibleChange(visible) {
       if (visible) {
         if (this.timerSelectVisible) {
@@ -71,45 +114,13 @@ export default {
       }
     },
     ...mapActions('currency', {
-      getList: 'CURRENCY_LIST_REQUEST',
-      getRate: 'CURRENCY_RATE_REQUEST',
+      getList: CURRENCY.LIST_REQUEST,
+      getRate: CURRENCY.RATE_REQUEST,
     }),
-  },
-  computed: {
-    height() {
-      return this.selectVisible ? '380px' : '128px';
-    },
-    toAmount() {
-      return Math.ceil(this.fromAmount * this.rate * 10000) / 10000;
-    },
-    chartUrl() {
-      return this.chart.replace('chst=vkc', 'chst=cob').replace('chs=270x94', '').replace('chsc=2', '');
-    },
-    ...mapState('currency', ['list', 'rate', 'chart']),
-  },
-  data() {
-    return {
-      title: '汇率转换',
-      fromAmount: getLocal('fromAmount') || '100',
-      fromCurrency: getLocal('fromCurrency') || '',
-      toCurrency: getLocal('toCurrency') || '',
-      selectVisible: false,
-    };
-  },
-  watch: {
-    fromAmount(val) {
-      this.getRate({ fromCurrency: this.fromCurrency, toCurrency: this.toCurrency });
-    },
-    fromCurrency(val) {
-      this.getRate({ fromCurrency: this.fromCurrency, toCurrency: this.toCurrency });
-    },
-    toCurrency(val) {
-      this.getRate({ fromCurrency: this.fromCurrency, toCurrency: this.toCurrency });
-    },
   },
 };
 </script>
 
 <style lang="scss" scoped>
-@import '../../styles/views/popup/index.scss';
+@import '~styles/views/popup/index.scss';
 </style>

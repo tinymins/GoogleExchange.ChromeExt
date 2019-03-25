@@ -1,11 +1,13 @@
 /**
- * @Author: Zhai Yiming (root@derzh.com)
- * @Date:   2017-12-04 14:02:25
- * @Last Modified by:   Emine Zhai (root@derzh.com)
- * @Last Modified time: 2018-03-26 17:47:57
+ * This file is part of vue-boilerplate.
+ * @link     : https://zhaiyiming.com/
+ * @author   : Emil Zhai (root@derzh.com)
+ * @modifier : Emil Zhai (root@derzh.com)
+ * @copyright: Copyright (c) 2018 TINYMINS.
  */
-import cookie from 'cookie';
+import cookie from 'js-cookie';
 
-export const get = (k, opt = {}) => cookie.get(k, Object.assign({ path: '/' }, opt));
-export const set = (k, v, opt = {}) => cookie.set(k, v, Object.assign({ path: '/' }, opt));
-export const remove = (k, opt = {}) => cookie.remove(k, Object.assign({ path: '/' }, opt));
+export const get = (k, opt = {}) => cookie.get(k, Object.assign({ path: process.env.PUBLIC_PATH }, opt));
+export const set = (k, v, opt = {}) => cookie.set(k, v, Object.assign({ path: process.env.PUBLIC_PATH }, opt));
+export const remove = (k, opt = {}) => cookie.remove(k, Object.assign({ path: process.env.PUBLIC_PATH }, opt));
+export const clear = () => { Object.keys(cookie.get()).forEach(v => cookie.remove(v)); };

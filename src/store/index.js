@@ -1,22 +1,23 @@
-/*
-* @Author: William Chan
-* @Date:   2017-05-03 15:30:50
-* @Last Modified by:   Administrator
-* @Last Modified time: 2017-05-04 00:29:56
-*/
-
+/**
+ * This file is part of vue-boilerplate.
+ * @link     : https://zhaiyiming.com/
+ * @author   : Emil Zhai (root@derzh.com)
+ * @modifier : Emil Zhai (root@derzh.com)
+ * @copyright: Copyright (c) 2018 TINYMINS.
+ */
 import Vue from 'vue';
 import Vuex from 'vuex';
-import { isDevelop } from '@/utils/util';
+import { isDevelop } from '@/utils/environment';
 // globle and common
 // import * as getters   from './getters'
 // import * as actions   from './actions'
 // import * as mutations from '@/store/mutations';
+import commonModule from '@/store/modules/common';
 import userModule from '@/store/modules/user';
 import currencyModule from '@/store/modules/currency';
 
 Vue.use(Vuex);
-export const store = new Vuex.Store({
+const store = new Vuex.Store({
   strict: isDevelop(),
   // state,
   // getters,
@@ -24,16 +25,8 @@ export const store = new Vuex.Store({
   // mutations,
 });
 
+store.registerModule('common', commonModule);
 store.registerModule('user', userModule);
 store.registerModule('currency', currencyModule);
 
-export const clearAuthorization = () => {
-  store.dispatch('user/USER_CLEAR');
-};
-
-export const getAuthorization = async () => {
-  if (!store.state.user.user) {
-    await store.dispatch('user/USER_GET');
-  }
-  return store.getters['user/user'];
-};
+export default store;

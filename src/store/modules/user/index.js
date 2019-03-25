@@ -1,87 +1,106 @@
-/*
-* @Author: William Chan
-* @Date:   2017-05-03 15:53:04
-* @Last Modified by:   Administrator
-* @Last Modified time: 2017-05-03 21:15:10
-*/
+/**
+ * This file is part of vue-boilerplate.
+ * @link     : https://zhaiyiming.com/
+ * @author   : Emil Zhai (root@derzh.com)
+ * @modifier : Emil Zhai (root@derzh.com)
+ * @copyright: Copyright (c) 2018 TINYMINS.
+ */
 /* eslint no-param-reassign: ["error", { "props": false }] */
-import router from '@/router';
+
 import * as api from '@/store/api/user';
 import { USER } from '@/store/types';
-import { isInWechat } from '@/utils/util';
-import { WECHAT_LOGIN_URL } from '@/config';
+import router from '@/router';
+import { camelize } from '@/utils/transfer';
+import { checkAuthorizeRedirect } from '@/utils/authorization';
+import { AUTH_STATE } from '@/config/index';
 
 export default {
   namespaced: true,
   state: {
     user: null,
+    status: AUTH_STATE.GUEST,
   },
   getters: {
     user: (state) => {
-      if (state.user && Object.keys(state.user).length !== 0) {
+      if (state.status === AUTH_STATE.LOGGED_IN && state.user && Object.keys(state.user).length !== 0) {
         return state.user;
       }
-      return false;
+      return null;
     },
+    status: state => state.status,
   },
   actions: {
-    [USER.LOGIN]({ commit, dispatch, rootState }, { name, code }) {
+    [USER.LOGIN]({ dispatch, rootState }, { phone, code }) {
       return new Promise((resolve, reject) => {
-        api.login(
-          'Logging in',
-          name, code,
-        ).then(() => {
-          dispatch(USER.GET, true).then(() => {
+        api.login(phone, code).then(() => {
+          dispatch(USER.GET, { reload: true, silent: true }).then(() => {
             const redirect = rootState.route.query.redirect;
             if (redirect) {
               router.push({ path: redirect });
             } else {
-              router.push({ name: 'user_index' });
+              router.push({ name: 'index' });
             }
             resolve();
           });
         }).catch(reject);
       });
     },
-    [USER.LOGOUT]({ dispatch }) {
+    [USER.LOGOUT]({ commit, rootState }) {
       return new Promise((resolve, reject) => {
-        api.logout('Logging out').then(() => {
-          dispatch(USER.CLEAR);
+        api.logout().then(async () => {
+          commit(USER.LOGOUT);
+          const { route } = router.resolve(rootState.common.route.to.fullPath);
+          const redirect = await checkAuthorizeRedirect(route);
+          if (redirect) {
+            router.push(redirect);
+          }
           resolve();
         }).catch(reject);
       });
     },
-    [USER.GET]({ commit, state }, force) {
-      if (force || !state.user) {
-        return api.getUser('Fetching login status').then((data) => {
-          commit(USER.GET, data.data.data);
-        }).catch(() => {
-          commit(USER.LOGOUT);
-        });
-      }
-      return Promise.resolve();
-    },
-    [USER.CLEAR]({ commit, rootState }) {
-      commit(USER.LOGOUT);
-      const requiresAuth = rootState.route.meta.requiresAuth;
-      if (requiresAuth) {
-        if (isInWechat() && WECHAT_LOGIN_URL) {
-          window.location = WECHAT_LOGIN_URL;
+    [USER.GET]({ commit, state }, { reload, refresh, strict = true, silent } = {}) {
+      if (refresh ? state.user : reload || !state.user) {
+        // window.__INITIAL_STATE__ = {"errcode":401,"errmsg":"未授权"}; // 测试数据
+        if (typeof window.__INITIAL_STATE__ === 'object') { // eslint-disable-line no-underscore-dangle
+          const res = camelize(window.__INITIAL_STATE__); // eslint-disable-line no-underscore-dangle
+          commit(USER.GET, {
+            status: res.errcode,
+            user: res.data || {},
+          });
+          delete window.__INITIAL_STATE__; // eslint-disable-line no-underscore-dangle
         } else {
-          router.push({
-            name: 'user_login',
-            query: { redirect: rootState.route.fullPath },
+          return new Promise((resolve, reject) => {
+            api.getUser(strict, silent).then((res) => {
+              commit(USER.GET, {
+                status: res.data ? res.errcode : AUTH_STATE.GUEST,
+                user: res.data || {},
+              });
+              resolve();
+            }).catch((err) => {
+              if (err && err.response) {
+                commit(USER.GET, {
+                  status: err.response.errcode,
+                  user: err.response.data || {},
+                });
+                resolve();
+              } else {
+                reject(err);
+              }
+            });
           });
         }
       }
+      return Promise.resolve();
     },
   },
   mutations: {
-    [USER.GET](state, data) {
-      state.user = data;
+    [USER.GET](state, { status, user = {} }) {
+      state.user = user;
+      state.status = status;
     },
     [USER.LOGOUT](state) {
       state.user = {};
+      state.status = AUTH_STATE.GUEST;
     },
   },
 };
