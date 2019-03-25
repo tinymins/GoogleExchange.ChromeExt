@@ -8,6 +8,7 @@
 
 .popup {
   padding: 0 40px;
+  background-color: #ffffff;
 
   &-title {
     padding: 12px 0 10px;
@@ -33,10 +34,16 @@
   flex-direction: row;
 
   &-image {
+    padding: 10px;
     width: 270px;
-    height: 135px;
+    height: 150px;
     flex-grow: 0;
     flex-shrink: 0;
+
+    &__img {
+      width: 280px;
+      height: 150px;
+    }
   }
 
   &-body {
