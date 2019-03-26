@@ -69,8 +69,8 @@ export default {
     return {
       title: '汇率转换',
       fromAmount: getLocal('fromAmount') || '100',
-      fromCurrency: this.$store.state.currency.rate.fromCurrency,
-      toCurrency: this.$store.state.currency.rate.toCurrency,
+      fromCurrency: this.$store.state.currency.rate.from,
+      toCurrency: this.$store.state.currency.rate.to,
       selectVisible: false,
     };
   },
@@ -89,13 +89,13 @@ export default {
   },
   watch: {
     fromAmount() {
-      this.getRate({ fromCurrency: this.fromCurrency, toCurrency: this.toCurrency });
+      this.getRate({ from: this.fromCurrency, to: this.toCurrency });
     },
     fromCurrency() {
-      this.getRate({ fromCurrency: this.fromCurrency, toCurrency: this.toCurrency });
+      this.getRate({ from: this.fromCurrency, to: this.toCurrency });
     },
     toCurrency() {
-      this.getRate({ fromCurrency: this.fromCurrency, toCurrency: this.toCurrency });
+      this.getRate({ from: this.fromCurrency, to: this.toCurrency });
     },
   },
   async mounted() {
@@ -103,7 +103,7 @@ export default {
     this.$showLoading({ id, text: 'Fetching currency from google...' });
     try {
       await this.getList();
-      await this.getRate({ fromCurrency: this.fromCurrency, toCurrency: this.toCurrency });
+      await this.getRate({ from: this.fromCurrency, to: this.toCurrency });
       this.$hideLoading({ id });
     } catch (e) {
       this.$showLoading({ id, text: 'Fetch currency data failed!' });

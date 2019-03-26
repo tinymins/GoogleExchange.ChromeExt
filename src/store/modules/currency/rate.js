@@ -19,18 +19,20 @@ export default {
   state: {
     rate: 0,
     chart: '',
-    fromCurrency: getLocal('fromCurrency') || '人民币',
-    toCurrency: getLocal('toCurrency') || '美元',
+    from: getLocal('store.currency.rate.from') || '人民币',
+    to: getLocal('store.currency.rate.to') || '美元',
     lock: false,
   },
   getters: {},
   actions: {
     [CURRENCY.GET_RATE]({ commit, state }, params) {
       commit(CURRENCY.GET_RATE, { status: 'start', data: params });
+      const fromCode = currencyCodes[state.from.toUpperCase()] || state.from;
+      const toCode = currencyCodes[state.to.toUpperCase()] || state.to;
       return new Promise((resolve, reject) => {
         api.getRate(
-          state.fromCurrency,
-          state.toCurrency,
+          fromCode,
+          toCode,
         ).then((res) => {
           commit(CURRENCY.GET_RATE, { status: 'success', data: res });
           resolve();
@@ -45,13 +47,13 @@ export default {
     [CURRENCY.GET_RATE](state, { status, data }) {
       if (status === 'start') {
         if (data) {
-          if (data.fromCurrency && data.fromCurrency !== state.fromCurrency) {
-            state.fromCurrency = data.fromCurrency;
-            setLocal('fromCurrency', state.fromCurrency);
+          if (data.from && data.from !== state.from) {
+            state.from = data.from;
+            setLocal('store.currency.rate.from', state.from);
           }
-          if (data.toCurrency && data.toCurrency !== state.toCurrency) {
-            state.toCurrency = data.toCurrency;
-            setLocal('toCurrency', state.toCurrency);
+          if (data.to && data.to !== state.to) {
+            state.to = data.to;
+            setLocal('store.currency.rate.to', state.to);
           }
         }
         state.lock = true;
@@ -59,10 +61,10 @@ export default {
         if (status === 'success') {
           const $ = cheerio.load(data);
           state.rate = $('#knowledge-currency__tgt-amount').data('value');
-          const regexFromCurrency = new RegExp(`${escapeRegExp(state.fromCurrency)}\\s*\\((\\w+)\\)`, 'iu');
-          const regexToCurrency = new RegExp(`${escapeRegExp(state.toCurrency)}\\s*\\((\\w+)\\)`, 'iu');
-          let fromCurrencyCode = currencyCodes[state.fromCurrency];
-          let toCurrencyCode = currencyCodes[state.toCurrency];
+          const regexFromCurrency = new RegExp(`${escapeRegExp(state.from)}\\s*\\((\\w+)\\)`, 'iu');
+          const regexToCurrency = new RegExp(`${escapeRegExp(state.to)}\\s*\\((\\w+)\\)`, 'iu');
+          let fromCurrencyCode = currencyCodes[state.from];
+          let toCurrencyCode = currencyCodes[state.to];
           if (!fromCurrencyCode || !toCurrencyCode) {
             $('em').each((i, el) => {
               const text = $(el).parent().text();
