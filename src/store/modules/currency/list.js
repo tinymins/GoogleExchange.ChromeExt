@@ -8,6 +8,7 @@
 /* eslint no-param-reassign: ["error", { "props": false }] */
 
 import unescape from 'lodash/unescape';
+import { setLocal, getLocal } from '@/utils/storage';
 import * as api from '@/store/api/currency';
 import { CURRENCY } from '@/store/types';
 
@@ -15,14 +16,15 @@ export default {
   namespaced: true,
   state: {
     lock: false,
-    list: [],
+    list: getLocal('store.currency.list.list') || [],
   },
   getters: {},
   actions: {
-    [CURRENCY.GET_LIST]({ commit }) {
+    [CURRENCY.GET_LIST]({ state, commit }) {
       commit(CURRENCY.GET_LIST, { status: 'start' });
-      return new Promise((resolve, reject) => {
-        api.getList().then((res) => {
+      const empty = state.list.length === 0;
+      const promise = new Promise((resolve, reject) => {
+        api.getList(!empty).then((res) => {
           commit(CURRENCY.GET_LIST, { status: 'success', data: res });
           resolve();
         }).catch((err) => {
@@ -30,6 +32,7 @@ export default {
           reject(err);
         });
       });
+      return empty ? promise : Promise.resolve();
     },
   },
   mutations: {
@@ -54,6 +57,7 @@ export default {
             }
           }
           state.list = list;
+          setLocal('store.currency.list.list', state.list);
         }
         state.lock = false;
       }

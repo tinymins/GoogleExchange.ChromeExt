@@ -24,7 +24,6 @@
 
   &-body {
     font-size: small;
-    float: left;
   }
 }
 
@@ -79,5 +78,11 @@
     &__btn {
       padding: 10px;
     }
+  }
+
+  &-time {
+    padding-top: 10px;
+    font-size: 20px;
+    color: #cccccc;
   }
 }

@@ -50,10 +50,14 @@
         <el-button class="conv-exchange__btn" icon="el-icon-sort" circle @click="exchange"></el-button>
       </div>
     </div>
+    <div class="popup-footer">
+      <div class="conv-time">汇率更新时间：{{ humanTime }}</div>
+    </div>
   </div>
 </template>
 
 <script>
+import moment from 'moment';
 import escape from 'lodash/escape';
 import { mapActions, mapState } from 'vuex';
 import { Input, Select, Option, Button } from 'element-ui';
@@ -87,8 +91,11 @@ export default {
     chartUrl() {
       return this.chart.replace('chst=vkc', 'chst=cob').replace('chs=270x94', '').replace('chsc=2', '');
     },
+    humanTime() {
+      return moment(this.time).format('MM/DD HH:mm:ss');
+    },
     ...mapState('currency/list', ['list']),
-    ...mapState('currency/rate', ['rate', 'chart']),
+    ...mapState('currency/rate', ['rate', 'chart', 'time']),
   },
   watch: {
     fromAmount() {
@@ -107,10 +114,10 @@ export default {
     try {
       await this.getList();
       await this.getRate({ from: this.fromCurrency, to: this.toCurrency });
-      this.$hideLoading({ id });
     } catch (e) {
-      this.$showLoading({ id, text: 'Fetch currency data failed!' });
+      this.$pushToast({ id, text: 'Fetch currency data failed!' });
     }
+    this.$hideLoading({ id });
   },
   methods: {
     ...mapActions('currency/list', {

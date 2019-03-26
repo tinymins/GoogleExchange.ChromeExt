@@ -18,29 +18,30 @@ export default {
   namespaced: true,
   state: {
     rate: 0,
+    time: 0,
     chart: '',
     from: getLocal('store.currency.rate.from') || '人民币',
     to: getLocal('store.currency.rate.to') || '美元',
+    cache: getLocal('store.currency.rate.cache') || [],
     lock: false,
   },
   getters: {},
   actions: {
-    [CURRENCY.GET_RATE]({ commit, state }, params) {
-      commit(CURRENCY.GET_RATE, { status: 'start', data: params });
-      const fromCode = currencyCodes[state.from.toUpperCase()] || state.from;
-      const toCode = currencyCodes[state.to.toUpperCase()] || state.to;
-      return new Promise((resolve, reject) => {
-        api.getRate(
-          fromCode,
-          toCode,
-        ).then((res) => {
-          commit(CURRENCY.GET_RATE, { status: 'success', data: res });
+    [CURRENCY.GET_RATE]({ commit, state }, { from, to }) {
+      commit(CURRENCY.GET_RATE, { status: 'start', data: { from, to } });
+      const fromCode = currencyCodes[state.from.toUpperCase()];
+      const toCode = currencyCodes[state.to.toUpperCase()];
+      const empty = !state.cache.find(c => c.from === from && c.to === to);
+      const promise = new Promise((resolve, reject) => {
+        api.getRate(fromCode || state.from, toCode || state.to, !empty).then((res) => {
+          commit(CURRENCY.GET_RATE, { status: 'success', data: { from, to, html: res } });
           resolve();
         }).catch((err) => {
           commit(CURRENCY.GET_RATE, { status: 'failure' });
           reject(err);
         });
       });
+      return empty ? promise : Promise.resolve();
     },
   },
   mutations: {
@@ -55,32 +56,56 @@ export default {
             state.to = data.to;
             setLocal('store.currency.rate.to', state.to);
           }
+          const cache = state.cache.find(c => c.from === data.from && c.to === data.to);
+          if (cache) {
+            state.rate = cache.rate;
+            state.time = cache.time;
+            state.chart = cache.chart;
+          } else {
+            state.rate = 0;
+            state.time = 0;
+            state.chart = 'http://www.google.com/finance/chart?q=CURRENCY';
+          }
         }
         state.lock = true;
       } else {
         if (status === 'success') {
-          const $ = cheerio.load(data);
-          state.rate = $('#knowledge-currency__tgt-amount').data('value');
-          const regexFromCurrency = new RegExp(`${escapeRegExp(state.from)}\\s*\\((\\w+)\\)`, 'iu');
-          const regexToCurrency = new RegExp(`${escapeRegExp(state.to)}\\s*\\((\\w+)\\)`, 'iu');
-          let fromCurrencyCode = currencyCodes[state.from];
-          let toCurrencyCode = currencyCodes[state.to];
-          if (!fromCurrencyCode || !toCurrencyCode) {
+          const $ = cheerio.load(data.html);
+          const reFrom = new RegExp(`${escapeRegExp(data.from)}\\s*\\((\\w+)\\)`, 'iu');
+          const reTo = new RegExp(`${escapeRegExp(data.to)}\\s*\\((\\w+)\\)`, 'iu');
+          let fromCode = currencyCodes[data.from];
+          let toCode = currencyCodes[data.to];
+          if (!fromCode || !toCode) {
             $('em').each((i, el) => {
               const text = $(el).parent().text();
-              const resFromCurrency = regexFromCurrency.exec(text);
-              if (resFromCurrency && !fromCurrencyCode) {
-                fromCurrencyCode = resFromCurrency[1];
+              const resFrom = reFrom.exec(text);
+              if (resFrom && !fromCode) {
+                fromCode = resFrom[1];
               }
-              const resToCurrency = regexToCurrency.exec(text);
-              if (resToCurrency && !toCurrencyCode) {
-                toCurrencyCode = resToCurrency[1];
+              const resTo = reTo.exec(text);
+              if (resTo && !toCode) {
+                toCode = resTo[1];
               }
             });
           }
-          state.chart = fromCurrencyCode && toCurrencyCode
-            ? `http://www.google.com/finance/chart?q=CURRENCY:${fromCurrencyCode}${toCurrencyCode}&tkr=1&p=5Y&chst=cob`
+          const cache = {};
+          cache.from = data.from;
+          cache.to = data.to;
+          cache.rate = $('#knowledge-currency__tgt-amount').data('value');
+          cache.time = (new Date()).valueOf();
+          cache.chart = fromCode && toCode
+            ? `http://www.google.com/finance/chart?q=CURRENCY:${fromCode}${toCode}&tkr=1&p=5Y&chst=cob`
             : 'http://www.google.com/finance/chart?q=CURRENCY';
+          if (state.from === data.from && state.to === data.to) {
+            state.rate = cache.rate;
+            state.time = cache.time;
+            state.chart = cache.chart;
+          }
+          state.cache = state.cache
+            .filter(c => c.from !== cache.from || c.to !== cache.to)
+            .filter((_, i) => i < 20);
+          state.cache.push(cache);
+          setLocal('store.currency.rate.cache', state.cache);
         }
         state.lock = false;
       }
