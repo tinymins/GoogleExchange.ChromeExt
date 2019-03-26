@@ -52,6 +52,11 @@
     </div>
     <div class="popup-footer">
       <div class="conv-time">汇率更新时间：{{ humanTime }}</div>
+      <div class="conv-recent-list">
+        <div v-for="(item, i) in recentList" :key="i" class="conv-recent-item" @click="use(item)">
+          {{ item.fromCode }}→{{ item.toCode }}
+        </div>
+      </div>
     </div>
   </div>
 </template>
@@ -94,7 +99,11 @@ export default {
     humanTime() {
       return moment(this.time).format('MM/DD HH:mm:ss');
     },
+    recentList() {
+      return this.recent.filter(c => c.fromCode && c.toCode).reverse().filter((_, i) => i <= 5);
+    },
     ...mapGetters('currency/list', ['list']),
+    ...mapState('currency/list', ['recent']),
     ...mapState('currency/rate', ['rate', 'chart', 'time']),
   },
   watch: {
@@ -138,6 +147,10 @@ export default {
           this.timerSelectVisible = null;
         }, 200);
       }
+    },
+    use(item) {
+      this.fromCurrency = item.from;
+      this.toCurrency = item.to;
     },
     exchange() {
       const toCurrency = this.toCurrency;

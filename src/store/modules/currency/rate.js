@@ -42,6 +42,7 @@ export default {
           reject(err);
         });
       });
+      store.commit(`currency/list/${CURRENCY.GET_RATE}`, { from, to, fromCode, toCode }); // 这时候 fromCode 可能是空
       return empty ? promise : Promise.resolve();
     },
   },
@@ -109,7 +110,7 @@ export default {
           }
           state.cache.push(cache);
           setLocal('store.currency.rate.cache', state.cache);
-          store.commit(`currency/list/${CURRENCY.GET_RATE}`, { from: data.from, to: data.to, fromCode, toCode });
+          store.commit(`currency/list/${CURRENCY.GET_RATE}`, { from: data.from, to: data.to, fromCode, toCode }); // 这时候 fromCode 大概率不是空
         }
         state.lock = false;
       }

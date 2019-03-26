@@ -25,6 +25,11 @@
   &-body {
     font-size: small;
   }
+
+  &-footer {
+    padding-top: 10px;
+    display: flex;
+  }
 }
 
 .conv {
@@ -81,8 +86,28 @@
   }
 
   &-time {
-    padding-top: 10px;
+    width: 300px;
+    flex: 0 0 auto;
     font-size: 20px;
     color: #cccccc;
+    word-wrap: none;
+    word-break: keep-all;
+  }
+
+  &-recent {
+    &-list {
+      display: flex;
+      flex: 1 1 auto;
+    }
+
+    &-item {
+      font-size: 20px;
+      color: #cccccc;
+      cursor: pointer;
+
+      &:not(:first-child) {
+        padding-left: 10px;
+      }
+    }
   }
 }
