@@ -306,6 +306,7 @@ export default {
   'Turkish Lira': 'TRY',
   '特立尼达多巴哥元': 'TTD',
   'Trinidad and Tobago Dollar': 'TTD',
+  'Trinidad & Tobago Dollar': 'TTD',
   '新台币': 'TWD',
   'New Taiwan Dollar': 'TWD',
   '坦桑尼亚先令': 'TZS',

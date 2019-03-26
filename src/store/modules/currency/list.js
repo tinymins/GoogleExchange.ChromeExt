@@ -7,6 +7,7 @@
  */
 /* eslint no-param-reassign: ["error", { "props": false }] */
 
+import unescape from 'lodash/unescape';
 import * as api from '@/store/api/currency';
 import { CURRENCY } from '@/store/types';
 
@@ -43,9 +44,10 @@ export default {
         const re = /<option[^>]*value\s*=\s*"([^"]*)"[^>]*>([^<]*)<\/option>/giu;
         let r = re.exec(part);
         while (r) {
+          const value = unescape(r[2]);
           list.push({
-            value: r[2],
-            label: r[2],
+            value,
+            label: value,
           });
           r = re.exec(part);
         }
