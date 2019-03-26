@@ -17,10 +17,11 @@
             size="small"
             filterable
             placeholder="请选择"
+            :filter-method="onSelectFilterChange"
             @visible-change="onSelectVisibleChange"
           >
             <el-option
-              v-for="item in list"
+              v-for="item in filterList"
               :key="item.value"
               :label="item.label"
               :value="item.value"
@@ -35,10 +36,11 @@
             size="small"
             filterable
             placeholder="请选择"
+            :filter-method="onSelectFilterChange"
             @visible-change="onSelectVisibleChange"
           >
             <el-option
-              v-for="item in list"
+              v-for="item in filterList"
               :key="item.value"
               :label="item.label"
               :value="item.value"
@@ -64,11 +66,13 @@
 <script>
 import moment from 'moment';
 import escape from 'lodash/escape';
+import escapeRegExp from 'lodash/escapeRegExp';
 import { mapActions, mapState, mapGetters } from 'vuex';
 import { Input, Select, Option, Button } from 'element-ui';
 import { CURRENCY } from '@/store/types';
 import { getLocal } from '@/utils/storage';
 import { popupWindow } from '@/utils/chrome-ext';
+import currencyCodes from '@/assets/currency-codes';
 
 export default {
   uses: [Button],
@@ -79,6 +83,7 @@ export default {
   },
   data() {
     return {
+      filter: '',
       title: '汇率转换',
       fromAmount: getLocal('fromAmount') || '100',
       fromCurrency: this.$store.state.currency.rate.from,
@@ -101,6 +106,24 @@ export default {
     },
     recentList() {
       return this.recent.filter(c => c.fromCode && c.toCode).reverse().filter((_, i) => i <= 5);
+    },
+    filterList() {
+      if (this.filter) {
+        const filter = this.filter.split('').map(s => escapeRegExp(s)).join('.*');
+        const re = new RegExp(filter, 'iu');
+        const list = this.list.filter((item) => {
+          if (re.exec(item.value)) {
+            return true;
+          }
+          const code = currencyCodes[item.value.toUpperCase()];
+          if (code && re.exec(code)) {
+            return true;
+          }
+          return false;
+        });
+        return list;
+      }
+      return this.list;
     },
     ...mapGetters('currency/list', ['list']),
     ...mapState('currency/list', ['recent']),
@@ -147,6 +170,10 @@ export default {
           this.timerSelectVisible = null;
         }, 200);
       }
+      this.filter = '';
+    },
+    onSelectFilterChange(filter) {
+      this.filter = filter;
     },
     use(item) {
       this.fromCurrency = item.from;
