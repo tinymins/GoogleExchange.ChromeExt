@@ -111,10 +111,10 @@ export default {
   },
   methods: {
     ...mapActions('currency/list', {
-      getList: CURRENCY.LIST_REQUEST,
+      getList: CURRENCY.GET_LIST,
     }),
     ...mapActions('currency/rate', {
-      getRate: CURRENCY.RATE_REQUEST,
+      getRate: CURRENCY.GET_RATE,
     }),
     onSelectVisibleChange(visible) {
       if (visible) {

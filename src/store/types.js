@@ -39,6 +39,5 @@ export const USER = exportVar('USER', [
 ]);
 
 export const CURRENCY = exportVar('CURRENCY', [
-  'LIST_REQUEST', 'LIST_SUCCESS', 'LIST_FAILURE',
-  'RATE_REQUEST', 'RATE_SUCCESS', 'RATE_FAILURE',
+  'GET_LIST', 'GET_RATE',
 ]);

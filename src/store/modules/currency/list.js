@@ -19,44 +19,44 @@ export default {
   },
   getters: {},
   actions: {
-    [CURRENCY.LIST_REQUEST]({ commit }, params) {
-      commit(CURRENCY.LIST_REQUEST, params);
+    [CURRENCY.GET_LIST]({ commit }) {
+      commit(CURRENCY.GET_LIST, { status: 'start' });
       return new Promise((resolve, reject) => {
         api.getList().then((res) => {
-          commit(CURRENCY.LIST_SUCCESS, res);
+          commit(CURRENCY.GET_LIST, { status: 'success', data: res });
           resolve();
-        }).catch(() => {
-          commit(CURRENCY.LIST_FAILURE);
-          reject();
+        }).catch((err) => {
+          commit(CURRENCY.GET_LIST, { status: 'failure' });
+          reject(err);
         });
       });
     },
   },
   mutations: {
-    [CURRENCY.LIST_REQUEST](state) {
-      state.lock = true;
-    },
-    [CURRENCY.LIST_SUCCESS](state, html) {
-      const list = [];
-      const found = html.match(/<select id="knowledge-currency.*?<\/select/u);
-      if (found) {
-        const part = found[0];
-        const re = /<option[^>]*value\s*=\s*"([^"]*)"[^>]*>([^<]*)<\/option>/giu;
-        let r = re.exec(part);
-        while (r) {
-          const value = unescape(r[2]);
-          list.push({
-            value,
-            label: value,
-          });
-          r = re.exec(part);
+    [CURRENCY.GET_LIST](state, { status, data }) {
+      if (status === 'start') {
+        state.lock = true;
+      } else {
+        if (status === 'success') {
+          const list = [];
+          const found = data.match(/<select id="knowledge-currency.*?<\/select/u);
+          if (found) {
+            const part = found[0];
+            const re = /<option[^>]*value\s*=\s*"([^"]*)"[^>]*>([^<]*)<\/option>/giu;
+            let r = re.exec(part);
+            while (r) {
+              const value = unescape(r[2]);
+              list.push({
+                value,
+                label: value,
+              });
+              r = re.exec(part);
+            }
+          }
+          state.list = list;
         }
+        state.lock = false;
       }
-      state.list = list;
-      state.lock = false;
-    },
-    [CURRENCY.LIST_FAILURE](state) {
-      state.lock = false;
     },
   },
 };

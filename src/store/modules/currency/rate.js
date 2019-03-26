@@ -25,63 +25,63 @@ export default {
   },
   getters: {},
   actions: {
-    [CURRENCY.RATE_REQUEST]({ commit, state }, params) {
-      commit(CURRENCY.RATE_REQUEST, params);
+    [CURRENCY.GET_RATE]({ commit, state }, params) {
+      commit(CURRENCY.GET_RATE, { status: 'start', data: params });
       return new Promise((resolve, reject) => {
         api.getRate(
           state.fromCurrency,
           state.toCurrency,
         ).then((res) => {
-          commit(CURRENCY.RATE_SUCCESS, res);
+          commit(CURRENCY.GET_RATE, { status: 'success', data: res });
           resolve();
-        }).catch(() => {
-          commit(CURRENCY.RATE_FAILURE);
-          reject();
+        }).catch((err) => {
+          commit(CURRENCY.GET_RATE, { status: 'failure' });
+          reject(err);
         });
       });
     },
   },
   mutations: {
-    [CURRENCY.RATE_REQUEST](state, params) {
-      if (params) {
-        if (params.fromCurrency && params.fromCurrency !== state.fromCurrency) {
-          state.fromCurrency = params.fromCurrency;
-          setLocal('fromCurrency', state.fromCurrency);
-        }
-        if (params.toCurrency && params.toCurrency !== state.toCurrency) {
-          state.toCurrency = params.toCurrency;
-          setLocal('toCurrency', state.toCurrency);
-        }
-      }
-      state.lock = true;
-    },
-    [CURRENCY.RATE_SUCCESS](state, html) {
-      const $ = cheerio.load(html);
-      state.rate = $('#knowledge-currency__tgt-amount').data('value');
-      const regexFromCurrency = new RegExp(`${escapeRegExp(state.fromCurrency)}\\s*\\((\\w+)\\)`, 'iu');
-      const regexToCurrency = new RegExp(`${escapeRegExp(state.toCurrency)}\\s*\\((\\w+)\\)`, 'iu');
-      let fromCurrencyCode = currencyCodes[state.fromCurrency];
-      let toCurrencyCode = currencyCodes[state.toCurrency];
-      if (!fromCurrencyCode || !toCurrencyCode) {
-        $('em').each((i, el) => {
-          const text = $(el).parent().text();
-          const resFromCurrency = regexFromCurrency.exec(text);
-          if (resFromCurrency && !fromCurrencyCode) {
-            fromCurrencyCode = resFromCurrency[1];
+    [CURRENCY.GET_RATE](state, { status, data }) {
+      if (status === 'start') {
+        if (data) {
+          if (data.fromCurrency && data.fromCurrency !== state.fromCurrency) {
+            state.fromCurrency = data.fromCurrency;
+            setLocal('fromCurrency', state.fromCurrency);
           }
-          const resToCurrency = regexToCurrency.exec(text);
-          if (resToCurrency && !toCurrencyCode) {
-            toCurrencyCode = resToCurrency[1];
+          if (data.toCurrency && data.toCurrency !== state.toCurrency) {
+            state.toCurrency = data.toCurrency;
+            setLocal('toCurrency', state.toCurrency);
           }
-        });
+        }
+        state.lock = true;
+      } else {
+        if (status === 'success') {
+          const $ = cheerio.load(data);
+          state.rate = $('#knowledge-currency__tgt-amount').data('value');
+          const regexFromCurrency = new RegExp(`${escapeRegExp(state.fromCurrency)}\\s*\\((\\w+)\\)`, 'iu');
+          const regexToCurrency = new RegExp(`${escapeRegExp(state.toCurrency)}\\s*\\((\\w+)\\)`, 'iu');
+          let fromCurrencyCode = currencyCodes[state.fromCurrency];
+          let toCurrencyCode = currencyCodes[state.toCurrency];
+          if (!fromCurrencyCode || !toCurrencyCode) {
+            $('em').each((i, el) => {
+              const text = $(el).parent().text();
+              const resFromCurrency = regexFromCurrency.exec(text);
+              if (resFromCurrency && !fromCurrencyCode) {
+                fromCurrencyCode = resFromCurrency[1];
+              }
+              const resToCurrency = regexToCurrency.exec(text);
+              if (resToCurrency && !toCurrencyCode) {
+                toCurrencyCode = resToCurrency[1];
+              }
+            });
+          }
+          state.chart = fromCurrencyCode && toCurrencyCode
+            ? `http://www.google.com/finance/chart?q=CURRENCY:${fromCurrencyCode}${toCurrencyCode}&tkr=1&p=5Y&chst=cob`
+            : 'http://www.google.com/finance/chart?q=CURRENCY';
+        }
+        state.lock = false;
       }
-      state.chart = fromCurrencyCode && toCurrencyCode
-        ? `http://www.google.com/finance/chart?q=CURRENCY:${fromCurrencyCode}${toCurrencyCode}&tkr=1&p=5Y&chst=cob`
-        : 'http://www.google.com/finance/chart?q=CURRENCY';
-      state.lock = false;
-    },
-    [CURRENCY.RATE_FAILURE](state) {
-      state.lock = false;
     },
   },
 };
