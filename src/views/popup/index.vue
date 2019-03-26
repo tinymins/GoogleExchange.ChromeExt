@@ -5,7 +5,7 @@
     </div>
     <div class="popup-author">&copy; 一名宅</div>
     <div class="popup-body conv">
-      <div class="conv-image">
+      <div class="conv-image" @click="open">
         <img v-if="chart" class="conv-image__img" :src="chartUrl">
       </div>
       <div class="conv-body">
@@ -52,11 +52,14 @@
     </div>
   </div>
 </template>
+
 <script>
-import { CURRENCY } from '@/store/types';
-import { getLocal } from '@/utils/storage';
+import escape from 'lodash/escape';
 import { mapActions, mapState } from 'vuex';
 import { Input, Select, Option, Button } from 'element-ui';
+import { CURRENCY } from '@/store/types';
+import { getLocal } from '@/utils/storage';
+import { popupWindow } from '@/utils/chrome-ext';
 
 export default {
   uses: [Button],
@@ -133,6 +136,11 @@ export default {
       const toCurrency = this.toCurrency;
       this.toCurrency = this.fromCurrency;
       this.fromCurrency = toCurrency;
+    },
+    open() {
+      const from = escape(this.fromCurrency);
+      const to = escape(this.toCurrency);
+      popupWindow(`https://www.google.com/search?q=${this.fromAmount}+${from}+${to}`);
     },
   },
 };
