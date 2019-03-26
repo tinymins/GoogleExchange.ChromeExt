@@ -59,7 +59,7 @@
 <script>
 import moment from 'moment';
 import escape from 'lodash/escape';
-import { mapActions, mapState } from 'vuex';
+import { mapActions, mapState, mapGetters } from 'vuex';
 import { Input, Select, Option, Button } from 'element-ui';
 import { CURRENCY } from '@/store/types';
 import { getLocal } from '@/utils/storage';
@@ -94,7 +94,7 @@ export default {
     humanTime() {
       return moment(this.time).format('MM/DD HH:mm:ss');
     },
-    ...mapState('currency/list', ['list']),
+    ...mapGetters('currency/list', ['list']),
     ...mapState('currency/rate', ['rate', 'chart', 'time']),
   },
   watch: {

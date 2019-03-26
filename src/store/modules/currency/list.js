@@ -17,8 +17,19 @@ export default {
   state: {
     lock: false,
     list: getLocal('store.currency.list.list') || [],
+    recent: getLocal('store.currency.list.recent') || [],
   },
-  getters: {},
+  getters: {
+    list(state) {
+      const list = state.list.map(_ => _);
+      const recent = state.recent;
+      const findIndex = item => recent.findIndex(
+        r => r.from === item.label || r.to === item.label,
+      );
+      list.sort((p1, p2) => findIndex(p2) - findIndex(p1));
+      return list;
+    },
+  },
   actions: {
     [CURRENCY.GET_LIST]({ state, commit }) {
       commit(CURRENCY.GET_LIST, { status: 'start' });
@@ -61,6 +72,15 @@ export default {
         }
         state.lock = false;
       }
+    },
+    [CURRENCY.GET_RATE](state, { from, to, fromCode, toCode }) {
+      state.recent = state.recent
+        .filter(c => (c.from !== from || c.to !== to) && (!fromCode || !toCode || c.fromCode !== fromCode || c.toCode !== toCode));
+      while (state.recent.length >= 40) {
+        state.recent.shift();
+      }
+      state.recent.push({ from, to, fromCode, toCode });
+      setLocal('store.currency.list.recent', state.recent);
     },
   },
 };

@@ -10,6 +10,7 @@
 import cheerio from 'cheerio';
 import escapeRegExp from 'lodash/escapeRegExp';
 import { setLocal, getLocal } from '@/utils/storage';
+import store from '@/store';
 import * as api from '@/store/api/currency';
 import { CURRENCY } from '@/store/types';
 import currencyCodes from '@/assets/currency-codes';
@@ -108,6 +109,7 @@ export default {
           }
           state.cache.push(cache);
           setLocal('store.currency.rate.cache', state.cache);
+          store.commit(`currency/list/${CURRENCY.GET_RATE}`, { from: data.from, to: data.to, fromCode, toCode });
         }
         state.lock = false;
       }
