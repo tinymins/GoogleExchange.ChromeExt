@@ -93,7 +93,7 @@ export default {
   },
   computed: {
     height() {
-      return this.selectVisible ? '480px' : '150px';
+      return this.selectVisible ? '480px' : '155px';
     },
     toAmount() {
       return Math.ceil(this.fromAmount * this.rate * 10000) / 10000;
