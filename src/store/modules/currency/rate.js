@@ -102,8 +102,10 @@ export default {
             state.chart = cache.chart;
           }
           state.cache = state.cache
-            .filter(c => c.from !== cache.from || c.to !== cache.to)
-            .filter((_, i) => i < 20);
+            .filter(c => c.from !== cache.from || c.to !== cache.to);
+          while (state.cache.length >= 20) {
+            state.cache.shift();
+          }
           state.cache.push(cache);
           setLocal('store.currency.rate.cache', state.cache);
         }
