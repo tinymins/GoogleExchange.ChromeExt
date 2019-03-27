@@ -31,12 +31,9 @@ import safeAreaInsets from 'safe-area-insets';
 export default {
   computed: {
     ...mapState('common', [
-      'loading',
       'loadings',
-      'toast',
       'toasts',
       'dialogs',
-      'actionsheet',
       'actionsheets',
       'viewportTop',
       'viewportRight',
@@ -46,15 +43,26 @@ export default {
       'bodyAutoHeight',
     ]),
     ...mapGetters('common', ['headerHeight', 'footerHeight']),
+    loading() {
+      return this.loadings[0];
+    },
+    toast() {
+      return this.toasts[0];
+    },
     dialog() {
       return this.dialogs[0];
     },
+    actionsheet() {
+      return this.actionsheets[0];
+    },
   },
   watch: {
-    loading() {
-      if (this.loading) {
-        const text = this.loadings.concat([this.loading])
-          .map(c => c.text).filter(_ => _).join(' | ');
+    loading(loading, old) {
+      if (loading === old) {
+        return;
+      }
+      if (loading) {
+        const text = this.loadings.map(c => c.text).filter(_ => _).join(' | ');
         if (this.insLoading) {
           this.insLoading.text = text;
         } else {
@@ -70,13 +78,16 @@ export default {
         this.insLoading = null;
       }
     },
-    toast() {
-      if (this.toast) {
+    toast(toast, old) {
+      if (toast === old) {
+        return;
+      }
+      if (toast) {
         Message({
-          message: this.toast.text,
-          type: this.toast.type,
-          duration: this.toast.time,
-          onClose: () => this.popToast(),
+          message: toast.text,
+          type: toast.type,
+          duration: toast.time,
+          onClose: () => this.$hideToast(toast),
         });
       }
     },
@@ -95,10 +106,13 @@ export default {
         });
       }
     },
-    actionsheet() {
-      if (this.actionsheet) {
-        console.warn('unhandled actionsheet!', this.actionsheet);
-        this.popActionsheet();
+    actionsheet(actionsheet, old) {
+      if (actionsheet === old) {
+        return;
+      }
+      if (actionsheet) {
+        console.warn('unhandled actionsheet!', actionsheet);
+        this.$hideActionsheet(actionsheet);
       }
     },
   },
@@ -136,8 +150,6 @@ export default {
   },
   methods: {
     ...mapMutations('common', {
-      popToast: COMMON.POP_TOAST,
-      popActionsheet: COMMON.POP_ACTIONSHEET,
       setViewportSize: COMMON.SET_VIEWPORT_SIZE,
     }),
     isTagSelectable(element) {

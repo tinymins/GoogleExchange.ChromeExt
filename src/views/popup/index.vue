@@ -153,7 +153,7 @@ export default {
       await this.getList();
       await this.getRate({ from: this.fromCurrency, to: this.toCurrency });
     } catch (e) {
-      this.$pushToast({ id, text: 'Fetch currency data failed!' });
+      this.$showToast({ id, text: 'Fetch currency data failed!' });
     }
     this.$hideLoading({ id });
   },
