@@ -17,6 +17,7 @@
   "manifest_version": 2,
   "name": "谷歌汇率转换小工具",
   "permissions": [
+    "activeTab",
     "http://www.google.com/",
     "https://www.google.com/",
     "http://www.google.com.hk/",

@@ -71,7 +71,7 @@ import { mapActions, mapState, mapGetters } from 'vuex';
 import { Input, Select, Option, Button } from 'element-ui';
 import { CURRENCY } from '@/store/types';
 import { getLocal } from '@/utils/storage';
-import { popupWindow } from '@/utils/chrome-ext';
+import { popupWindow, getSelection } from '@/utils/chrome-ext';
 import currencyCodes from '@/assets/currency-codes';
 
 export default {
@@ -141,6 +141,12 @@ export default {
     },
   },
   async mounted() {
+    getSelection().then((selection) => {
+      const amount = parseFloat(selection);
+      if (amount) {
+        this.fromAmount = amount;
+      }
+    });
     const id = Symbol('Fetching currency');
     this.$showLoading({ id, text: 'Fetching currency from google...' });
     try {
