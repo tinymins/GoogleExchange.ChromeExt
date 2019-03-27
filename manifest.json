@@ -1,10 +1,14 @@
 {
+  "manifest_version": 2,
+  "name": "谷歌汇率转换小工具",
+  "short_name": "谷歌汇率通",
+  "description": "简洁、轻量的谷歌汇率转换小工具。",
+  "version": "0.4.4",
   "browser_action": {
     "default_icon": "static/icons/icon_128.png",
     "default_popup": "index.html#/popup",
     "default_title": "谷歌汇率转换小工具"
   },
-  "description": "简洁、轻量的谷歌汇率转换小工具。",
   "icons": {
     "16": "static/icons/icon_16.png",
     "19": "static/icons/icon_19.png",
@@ -14,8 +18,6 @@
     "128": "static/icons/icon_128.png",
     "256": "static/icons/icon_256.png"
   },
-  "manifest_version": 2,
-  "name": "谷歌汇率转换小工具",
   "permissions": [
     "activeTab",
     "http://www.google.com/",
@@ -26,7 +28,5 @@
     "https://finance.google.com/",
     "http://www.baidu.com/"
   ],
-  "short_name": "谷歌汇率通",
-  "update_url": "https://clients2.google.com/service/update2/crx",
-  "version": "0.4.4"
+  "update_url": "https://clients2.google.com/service/update2/crx"
 }
