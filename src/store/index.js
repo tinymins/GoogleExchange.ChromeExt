@@ -11,10 +11,10 @@ import { isDevelop } from '@/utils/environment';
 // globle and common
 // import * as getters   from './getters'
 // import * as actions   from './actions'
-// import * as mutations from '@/store/mutations';
-import commonModule from '@/store/modules/common';
-import userModule from '@/store/modules/user';
-import currencyModule from '@/store/modules/currency';
+// import * as mutations from './mutations';
+import commonModule from './common';
+import userModule from './user';
+import currencyModule from './currency';
 
 Vue.use(Vuex);
 const store = new Vuex.Store({

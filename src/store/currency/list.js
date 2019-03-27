@@ -8,9 +8,9 @@
 /* eslint no-param-reassign: ["error", { "props": false }] */
 
 import unescape from 'lodash/unescape';
-import { setLocal, getLocal } from '@/utils/storage';
-import * as api from '@/store/api/currency';
+import * as api from '@/api/currency';
 import { CURRENCY } from '@/store/types';
+import { setLocal, getLocal } from '@/utils/storage';
 
 export default {
   namespaced: true,

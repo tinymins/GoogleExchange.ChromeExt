@@ -11,7 +11,7 @@ import cheerio from 'cheerio';
 import escapeRegExp from 'lodash/escapeRegExp';
 import { setLocal, getLocal } from '@/utils/storage';
 import store from '@/store';
-import * as api from '@/store/api/currency';
+import * as api from '@/api/currency';
 import { CURRENCY } from '@/store/types';
 import currencyCodes from '@/assets/currency-codes';
 

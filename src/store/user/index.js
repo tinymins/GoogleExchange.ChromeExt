@@ -7,9 +7,9 @@
  */
 /* eslint no-param-reassign: ["error", { "props": false }] */
 
-import * as api from '@/store/api/user';
-import { USER } from '@/store/types';
 import router from '@/router';
+import * as api from '@/api/user';
+import { USER } from '@/store/types';
 import { camelize } from '@/utils/transfer';
 import { checkAuthorizeRedirect } from '@/utils/authorization';
 import { AUTH_STATE } from '@/config/index';
