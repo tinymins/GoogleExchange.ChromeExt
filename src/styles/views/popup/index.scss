@@ -10,15 +10,18 @@
   padding: 0 40px;
   background-color: #ffffff;
 
+  &-header {
+    padding: 20px 0 10px;
+    font-size: 24px;
+    display: flex;
+    justify-content: space-between;
+  }
+
   &-title {
-    padding: 12px 0 10px;
-    & h3 { display: inline; }
+    font-weight: 500;
   }
 
   &-author {
-    position: fixed;
-    top: 20px;
-    right: 40px;
     color: gray;
   }
 

@@ -1,9 +1,9 @@
 <template>
   <div class="popup" :style="{ height }">
-    <div class="popup-title">
-      <h3><b>{{ title }}</b></h3>
+    <div class="popup-header">
+      <div class="popup-title">{{ title }}</div>
+      <div class="popup-author">&copy; 一名宅</div>
     </div>
-    <div class="popup-author">&copy; 一名宅</div>
     <div class="popup-body conv">
       <div class="conv-image" @click="open">
         <img v-if="chart" class="conv-image__img" :src="chartUrl">
