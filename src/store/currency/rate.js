@@ -7,8 +7,6 @@
  */
 /* eslint no-param-reassign: ["error", { "props": false }] */
 
-import cheerio from 'cheerio';
-import escapeRegExp from 'lodash/escapeRegExp';
 import { setLocal, getLocal } from '@/utils/storage';
 import store from '@/store';
 import * as api from '@/api/currency';
@@ -35,7 +33,7 @@ export default {
       const empty = !state.cache.find(c => c.from === from && c.to === to);
       const promise = new Promise((resolve, reject) => {
         api.getRate(fromCode || state.from, toCode || state.to, !empty).then((res) => {
-          commit(CURRENCY.GET_RATE, { status: 'success', data: { from, to, html: res } });
+          commit(CURRENCY.GET_RATE, { status: 'success', data: res.data });
           resolve();
         }).catch((err) => {
           commit(CURRENCY.GET_RATE, { status: 'failure' });
@@ -72,45 +70,19 @@ export default {
         state.lock = true;
       } else {
         if (status === 'success') {
-          const $ = cheerio.load(data.html);
-          const reFrom = new RegExp(`${escapeRegExp(data.from)}\\s*\\((\\w+)\\)`, 'iu');
-          const reTo = new RegExp(`${escapeRegExp(data.to)}\\s*\\((\\w+)\\)`, 'iu');
-          let fromCode = currencyCodes[data.from];
-          let toCode = currencyCodes[data.to];
-          if (!fromCode || !toCode) {
-            $('em').each((i, el) => {
-              const text = $(el).parent().text();
-              const resFrom = reFrom.exec(text);
-              if (resFrom && !fromCode) {
-                fromCode = resFrom[1];
-              }
-              const resTo = reTo.exec(text);
-              if (resTo && !toCode) {
-                toCode = resTo[1];
-              }
-            });
-          }
-          const cache = {};
-          cache.from = data.from;
-          cache.to = data.to;
-          cache.rate = $('#knowledge-currency__tgt-amount').data('value');
-          cache.time = (new Date()).valueOf();
-          cache.chart = fromCode && toCode
-            ? `http://www.google.com/finance/chart?q=CURRENCY:${fromCode}${toCode}&tkr=1&p=5Y&chst=cob`
-            : 'http://www.google.com/finance/chart?q=CURRENCY';
           if (state.from === data.from && state.to === data.to) {
-            state.rate = cache.rate;
-            state.time = cache.time;
-            state.chart = cache.chart;
+            state.rate = data.rate;
+            state.time = data.time;
+            state.chart = data.chart;
           }
           state.cache = state.cache
-            .filter(c => c.from !== cache.from || c.to !== cache.to);
+            .filter(c => c.from !== data.from || c.to !== data.to);
           while (state.cache.length >= 20) {
             state.cache.shift();
           }
-          state.cache.push(cache);
+          state.cache.push(data);
           setLocal('store.currency.rate.cache', state.cache);
-          store.commit(`currency/list/${CURRENCY.GET_RATE}`, { from: data.from, to: data.to, fromCode, toCode }); // 这时候 fromCode 大概率不是空
+          store.commit(`currency/list/${CURRENCY.GET_RATE}`, data);
         }
         state.lock = false;
       }

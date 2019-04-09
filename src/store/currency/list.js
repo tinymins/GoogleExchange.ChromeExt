@@ -7,7 +7,6 @@
  */
 /* eslint no-param-reassign: ["error", { "props": false }] */
 
-import unescape from 'lodash/unescape';
 import * as api from '@/api/currency';
 import { CURRENCY } from '@/store/types';
 import { setLocal, getLocal } from '@/utils/storage';
@@ -36,7 +35,7 @@ export default {
       const empty = state.list.length === 0;
       const promise = new Promise((resolve, reject) => {
         api.getList(!empty).then((res) => {
-          commit(CURRENCY.GET_LIST, { status: 'success', data: res });
+          commit(CURRENCY.GET_LIST, { status: 'success', data: res.data });
           resolve();
         }).catch((err) => {
           commit(CURRENCY.GET_LIST, { status: 'failure' });
@@ -52,22 +51,7 @@ export default {
         state.lock = true;
       } else {
         if (status === 'success') {
-          const list = [];
-          const found = data.match(/<select id="knowledge-currency.*?<\/select/u);
-          if (found) {
-            const part = found[0];
-            const re = /<option[^>]*value\s*=\s*"([^"]*)"[^>]*>([^<]*)<\/option>/giu;
-            let r = re.exec(part);
-            while (r) {
-              const value = unescape(r[2]);
-              list.push({
-                value,
-                label: value,
-              });
-              r = re.exec(part);
-            }
-          }
-          state.list = list;
+          state.list = data;
           setLocal('store.currency.list.list', state.list);
         }
         state.lock = false;
