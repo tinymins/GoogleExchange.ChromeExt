@@ -3,7 +3,7 @@
   "name": "谷歌汇率转换小工具",
   "short_name": "谷歌汇率通",
   "description": "简洁、轻量的谷歌汇率转换小工具。",
-  "version": "0.4.4",
+  "version": "0.4.5",
   "browser_action": {
     "default_icon": "static/icons/icon_128.png",
     "default_popup": "index.html#/popup",
