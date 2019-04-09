@@ -14,14 +14,15 @@ import get from 'lodash/get';
 import { AUTH_STATE } from '@/config';
 import { routeClone, routeEquals, concatPath, compareVersion } from '@/utils/util';
 import { isInWechatMobile, supportsPushState, isInAppleWebkit, getAppleWebkitVersion, isIniOS } from '@/utils/environment';
-// Module Route
-import topRoute from '@/router/basic/top';
-import popupRoute from '@/router/basic/popup';
 import store from '@/store';
 import { COMMON } from '@/store/types';
 import { setHeaderTitle, setWechatShare, showDialog } from '@/store/utils';
 import { checkAuthorizeRedirect } from '@/utils/authorization';
 import ProgressBar from '@/components/progressbar';
+
+// Module Route
+import topRoute from './modules/top';
+import popupRoute from './modules/popup';
 
 const state = {
   // remember entry location info for auto convert

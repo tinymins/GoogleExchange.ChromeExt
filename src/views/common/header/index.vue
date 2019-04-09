@@ -35,13 +35,13 @@ export default {
         this.$router.push({ name });
       },
       get() {
-        let active = this.$route.name;
-        Object.values(this.$route.matched).forEach((obj) => {
-          if (obj.meta.parent) {
-            active = obj.meta.parent;
+        let name = this.$route.name;
+        Object.values(this.$route.matched).forEach((r) => {
+          if (r.meta.tabbar) {
+            name = r.meta.tabbar.replace(/[^/]+\//u, '');
           }
         });
-        return active;
+        return name;
       },
     },
   },
