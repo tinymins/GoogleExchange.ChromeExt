@@ -1,65 +1,67 @@
 <template>
   <div class="popup" :style="{ height }">
-    <div class="popup-header">
-      <div class="popup-title">{{ title }}</div>
-      <div class="popup-author">&copy; 一名宅</div>
-    </div>
-    <div class="popup-body conv">
-      <div class="conv-image" @click="open">
-        <img v-if="chart" class="conv-image__img" :src="chartUrl">
+    <template v-if="mounted">
+      <div class="popup-header">
+        <div class="popup-title">{{ title }}</div>
+        <div class="popup-author">&copy; 一名宅</div>
       </div>
-      <div class="conv-body">
-        <div class="conv-body-line">
-          <el-input class="conv-body-line-amount" v-model="fromAmount" size="small" value="100"></el-input>
-          <el-select
-            v-model="fromCurrency"
-            class="conv-body-line-currency"
-            size="small"
-            filterable
-            placeholder="请选择"
-            :filter-method="onSelectFilterChange"
-            @visible-change="onSelectVisibleChange"
-          >
-            <el-option
-              v-for="item in filterList"
-              :key="item.value"
-              :label="item.label"
-              :value="item.value"
-            ></el-option>
-          </el-select>
+      <div class="popup-body conv">
+        <div class="conv-image" @click="open">
+          <img v-if="chart" class="conv-image__img" :src="chartUrl">
         </div>
-        <div class="conv-body-line">
-          <el-input class="conv-body-line-amount" v-model="toAmount" size="small" readonly></el-input>
-          <el-select
-            v-model="toCurrency"
-            class="conv-body-line-currency"
-            size="small"
-            filterable
-            placeholder="请选择"
-            :filter-method="onSelectFilterChange"
-            @visible-change="onSelectVisibleChange"
-          >
-            <el-option
-              v-for="item in filterList"
-              :key="item.value"
-              :label="item.label"
-              :value="item.value"
-            ></el-option>
-          </el-select>
+        <div class="conv-body">
+          <div class="conv-body-line">
+            <el-input class="conv-body-line-amount" v-model="fromAmount" size="small" value="100"></el-input>
+            <el-select
+              v-model="fromCurrency"
+              class="conv-body-line-currency"
+              size="small"
+              filterable
+              placeholder="请选择"
+              :filter-method="onSelectFilterChange"
+              @visible-change="onSelectVisibleChange"
+            >
+              <el-option
+                v-for="item in filterList"
+                :key="item.value"
+                :label="item.label"
+                :value="item.value"
+              ></el-option>
+            </el-select>
+          </div>
+          <div class="conv-body-line">
+            <el-input class="conv-body-line-amount" v-model="toAmount" size="small" readonly></el-input>
+            <el-select
+              v-model="toCurrency"
+              class="conv-body-line-currency"
+              size="small"
+              filterable
+              placeholder="请选择"
+              :filter-method="onSelectFilterChange"
+              @visible-change="onSelectVisibleChange"
+            >
+              <el-option
+                v-for="item in filterList"
+                :key="item.value"
+                :label="item.label"
+                :value="item.value"
+              ></el-option>
+            </el-select>
+          </div>
         </div>
-      </div>
-      <div class="conv-exchange">
-        <el-button class="conv-exchange__btn" icon="el-icon-sort" circle @click="exchange"></el-button>
-      </div>
-    </div>
-    <div class="popup-footer">
-      <div class="conv-time">汇率更新时间：{{ humanTime }}</div>
-      <div class="conv-recent-list">
-        <div v-for="(item, i) in recentList" :key="i" class="conv-recent-item" @click="use(item)">
-          {{ item.fromCode }}→{{ item.toCode }}
+        <div class="conv-exchange">
+          <el-button class="conv-exchange__btn" icon="el-icon-sort" circle @click="exchange"></el-button>
         </div>
       </div>
-    </div>
+      <div class="popup-footer">
+        <div class="conv-time">汇率更新时间：{{ humanTime }}</div>
+        <div class="conv-recent-list">
+          <div v-for="(item, i) in recentList" :key="i" class="conv-recent-item" @click="use(item)">
+            {{ item.fromCode }}→{{ item.toCode }}
+          </div>
+        </div>
+      </div>
+    </template>
   </div>
 </template>
 
@@ -83,6 +85,7 @@ export default {
   },
   data() {
     return {
+      mounted: false,
       filter: '',
       title: '汇率转换',
       fromAmount: getLocal('fromAmount') || '100',
@@ -140,7 +143,7 @@ export default {
       this.getRate({ from: this.fromCurrency, to: this.toCurrency });
     },
   },
-  async mounted() {
+  mounted() {
     getSelection().then((selection) => {
       const amount = parseFloat(selection);
       if (amount) {
@@ -149,13 +152,16 @@ export default {
     });
     const id = Symbol('Fetching currency');
     this.$showLoading({ id, text: 'Fetching currency from google...' });
-    try {
-      await this.getList();
-      await this.getRate({ from: this.fromCurrency, to: this.toCurrency });
-    } catch (e) {
-      this.$showToast({ id, text: 'Fetch currency data failed!' });
-    }
-    this.$hideLoading({ id });
+    this.getList()
+      .then(() => this.getRate({ from: this.fromCurrency, to: this.toCurrency }))
+      .then(() => {
+        this.$hideLoading({ id });
+      })
+      .catch(() => {
+        this.$showToast({ id, text: 'Fetch currency data failed!' });
+      });
+    window.addEventListener('resize', this.startRender);
+    this.timerRender = window.setTimeout(this.startRender, 50);
   },
   methods: {
     ...mapActions('currency/list', {
@@ -164,6 +170,14 @@ export default {
     ...mapActions('currency/rate', {
       getRate: CURRENCY.GET_RATE,
     }),
+    startRender() {
+      if (this.timerRender) {
+        clearTimeout(this.timerRender);
+        delete this.timerRender;
+      }
+      this.mounted = true;
+      window.removeEventListener('resize', this.onMounted);
+    },
     onSelectVisibleChange(visible) {
       if (visible) {
         if (this.timerSelectVisible) {
